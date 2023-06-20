@@ -1,0 +1,129 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+.watchList_header {
+  font-weight: 500;
+  font-size: 20px;
+  text-align: left;
+  margin-left: 10px;
+
+}
+
+.search-area {
+  display: flex;
+  position: relative;
+
+  /* margin-left: 15px; */
+}
+
+.search-input {
+  width: 80%;
+  margin: 10px auto;
+  height: 50px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.search-input ::placeholder {
+  text-align: center;
+}
+
+.search_icon {
+  height: 40px;
+  position: absolute;
+  left: 15%;
+  top: 20%;
+}
+
+.filter_icon {
+  height: 40px;
+  position: absolute;
+  left: 75%;
+  top: 20%;
+}
+
+.watchListComponent {
+  /* width: 30%; */
+  /* margin-left: 15px; */
+  /* display: flex;
+  flex-direction: column;
+  justify-content: space-between; */
+  display: flex;
+  flex-direction: column;
+}
+
+.watchlist-item {
+  /* height: 70px; */
+  /* background-color: darkgrey; */
+  color: black;
+  /* margin: 5px 0px; */
+  font-size: 16px;
+  border-bottom: 1px solid black;
+  /* margin: 5px 0px; */
+  /* padding-left: 10px; */
+  /* padding-right: 5px; */
+  /* border-radius: 10px; */
+  /* display: flex;
+  flex-direction: column;
+  justify-content: space-between; */
+}
+
+.watchlist-row {
+  display: flex;
+  padding-right: 10px;
+  padding-left: 10px;
+  /* padding: 5px; */
+  /* flex-direction: row; */
+  /* justify-content: space-around; */
+}
+
+.watchlist_data_left {
+  width: 50%;
+  display: flex;
+  justify-content: left;
+  white-space: nowrap;
+}
+
+.watchlist_data_right {
+  width: 50%;
+  display: flex;
+  justify-content: end;
+}
+
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
