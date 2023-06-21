@@ -277,3 +277,54 @@ export const stockData = [
         }
     }
 ]
+export const watchlistNames = [
+    {
+        name: 'test1',
+
+        id: '234'
+    }, {
+        name: 'test2',
+        id: '234'
+
+    },
+    {
+        name: 'test3',
+        id: '234'
+
+    },
+    {
+        name: 'test3',
+        id: '234'
+
+    },
+    {
+        name: 'test5',
+        id: '234'
+
+    },
+    {
+        name: 'test6',
+        id: '234'
+
+    },
+    {
+        name: 'test6',
+        id: '234'
+
+    },
+    {
+        name: 'test6',
+        id: '234'
+
+    },
+    {
+        name: 'test3',
+        id: '234'
+
+    },
+    {
+        name: 'test3',
+        id: '234'
+
+    }
+]

@@ -13,6 +13,31 @@
   text-align: left;
   margin-left: 10px;
 
+} 
+ 
+.watclistNames_container{
+  list-style-type: none; 
+
+  display: flex; 
+  flex-direction: row; 
+  justify-content: space-between; 
+  white-space: nowrap;  
+  height: 30px;
+  padding: 5px;
+  overflow: scroll; 
+
+}
+ ::-webkit-scrollbar {
+  display: none;
+}
+.watclistNames_container li{
+  margin: 0px 5px;
+
+
+} 
+.watclistNames_container li:hover{
+  color: blue; 
+  border-bottom: 1px solid blue;
 }
 
 .search-area {
