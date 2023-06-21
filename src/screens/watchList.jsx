@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react'
 import { stockData, watchlistNames } from '../assets/stocksData'
 import searchImg from "../assets/images/search.png";
 import filterImg from "../assets/images/setting.png";
-import { deviceCallback } from "../components/common";
+import {sendGetGroupsRequest} from "../utils/device-interface";
 console.log("watchlistNames", watchlistNames);
 
 export default function WatchList() {
     const [stockList, setStockList] = useState([])
     const [watchListNames, setWatchListNames] = useState([])
     const [deviceType, setDeviceType] = useState("");
+
+
     // device detect 
     useEffect(() => {
         if (
@@ -18,21 +20,27 @@ export default function WatchList() {
             /iPad|iPhone|iPod/.test(navigator.userAgent) ?
                 setDeviceType("ios") : setDeviceType('Android')
             setWatchListNames(watchlistNames);
+
         } else {
             setDeviceType("Desktop");
         }
     }, []);
 
     useEffect(() => {
-        if (deviceType === 'ios' || deviceType === 'android') {
-            // watchlist count  
-            deviceCallback(sendGetGroupsRequest, "")
-        }
+        // if (deviceType === 'ios') {
+        //     // watchlist count  
+        //     sendGetGroupsRequest()  
+        // }
+        sendGetGroupsRequest()
+        window ?? window.getGroupsResponse()
     }, [])
 
-    const sendGetGroupsRequest = () => {
-        setStockList(stockData)
-    }
+    
+
+
+    // const sendGetGroupsRequest = () => {
+    //     setStockList(stockData)
+    // }
     const watchList_items = () => {
         console.log("watchList items Data");
     }
@@ -42,7 +50,7 @@ export default function WatchList() {
             wid: item.id
         }
         // window.webkit.messageHandlers.MyHandler.postMessage(req);
-        deviceCallback(watchList_items, req)
+        //deviceCallback(watchList_items, req)
     }
     return (
         <div>
@@ -56,7 +64,7 @@ export default function WatchList() {
             <div className='search-area'>
                 <img className='search_icon' src={searchImg} alt='search-img' />
                 <input className='search-input' type='text' placeholder='stocks, future  & Options ' />
-                <img className='filter_icon' src={filterImg} />
+                <img className='filter_icon' alt="filter" src={filterImg} />
             </div>
 
             <div className='watchListComponent'>
