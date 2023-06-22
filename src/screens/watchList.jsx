@@ -2,13 +2,21 @@ import React, { useEffect, useState } from 'react'
 import { stockData, watchlistNames } from '../assets/stocksData'
 import searchImg from "../assets/images/search.png";
 import filterImg from "../assets/images/setting.png";
-import {sendGetGroupsRequest} from "../utils/device-interface";
+import { sendGetGroupsRequest, getWatchListData } from "../utils/device-interface";
+import { useSelector, useDispatch } from 'react-redux';
+import WatchListReducer from '../reducers/watchListReducer';
+import { getsymbols, storewatchlist } from '../actions/watchlistAction';
 console.log("watchlistNames", watchlistNames);
 
 export default function WatchList() {
-    const [stockList, setStockList] = useState([])
+    const [stockList, setStockList] = useState(stockData)
     const [watchListNames, setWatchListNames] = useState([])
     const [deviceType, setDeviceType] = useState("");
+
+    const dispatch = useDispatch();
+
+    const watchListGroup = useSelector(state => state.WatchListReducer);
+    console.log('watchListGroup  Reducer store', watchListGroup);
 
 
     // device detect 
@@ -27,30 +35,51 @@ export default function WatchList() {
     }, []);
 
     useEffect(() => {
-        // if (deviceType === 'ios') {
-        //     // watchlist count  
-        //     sendGetGroupsRequest()  
-        // }
+
         sendGetGroupsRequest()
-        window ?? window.getGroupsResponse()
+        let Grpresponse = window ?? window.getGroupsResponse();
+        console.log('response from device ', Grpresponse);
+        if (Grpresponse !== null && Grpresponse.data !== null) {
+            dispatch(getsymbols(Grpresponse.data))
+            let watchListNamesGroup = Grpresponse.data;
+            let req = {
+                "wId": watchListNamesGroup[0].wName
+            }
+            getWatchListData(req);
+            let watchListRespone = window ?? window.getwatchListResponse();
+            console.log("Respoinse from Device ", watchListRespone);
+            if (watchListRespone !== null && watchListRespone.data !== null) {
+                dispatch(storewatchlist(watchListRespone));
+
+            }
+            else {
+                console.error('errror ', watchListRespone)
+            }
+
+        }
+        else {
+            console.error('Invalid data ', Grpresponse)
+        }
     }, [])
 
-    
 
 
-    // const sendGetGroupsRequest = () => {
-    //     setStockList(stockData)
-    // }
-    const watchList_items = () => {
-        console.log("watchList items Data");
-    }
+
+
+
     const handleWatchListClick = (item) => {
         console.log("item", item);
         let req = {
-            wid: item.id
+            "wId": item.name
         }
-        // window.webkit.messageHandlers.MyHandler.postMessage(req);
-        //deviceCallback(watchList_items, req)
+        getWatchListData(req);
+        let watchListRespone = window ?? window.getwatchListResponse();
+        console.log("Respoinse from Device ", watchListRespone);
+        if (watchListRespone !== null && watchListRespone.data !== null) {
+            dispatch(storewatchlist(watchListRespone.data.symbols));
+
+        }
+
     }
     return (
         <div>

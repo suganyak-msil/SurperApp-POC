@@ -1,3 +1,6 @@
+import { getsymbols } from "../actions/watchlistAction";
+// import { useDispatch } from "react-redux";
+// const dispatch = useDispatch();
 class DeviceIdentifier {
     constructor() {
         this._userAgent = navigator.userAgent || "";
@@ -21,27 +24,41 @@ class DeviceIdentifier {
     }
 }
 let deviceIdentifier = new DeviceIdentifier();
-    
-let iosInterface = (window.webkit ? window.webkit.messageHandlers : {}); 
+
+let iosInterface = (window.webkit ? window.webkit.messageHandlers : {});
 
 export function sendGetGroupsRequest() {
     console.log(deviceIdentifier.isIos)
     //if(deviceIdentifier.isIos){
-        console.log('entered')
-        iosInterface.sendGetGroupsRequest && iosInterface.sendGetGroupsRequest.postMessage("");
-        intializeGlobalVariable()
+    console.log('entered')
+    iosInterface.sendGetGroupsRequest && iosInterface.sendGetGroupsRequest.postMessage("trail");
+    intializeGlobalVariable()
     //}
 }
 
-export function intializeGlobalVariable(){
+export function intializeGlobalVariable() {
     console.log(window)
-    window??  Object.defineProperties(window, {
+    window ?? Object.defineProperties(window, {
         getGroupsResponse: {
             get: () => getGroupsResponse,
+        },
+        getwatchListresponse: {
+            get: () => getwatchListResponse,
         }
     })
 }
 
-function getGroupsResponse(response){
-    console.log(response)
+function getGroupsResponse(response) {
+    console.log('getGroupsResponse ', response);
+    return response;
+}
+export function getWatchListData(name) {
+    iosInterface.sendGetSymbolsRequest && iosInterface.sendGetSymbolsRequest.postMessage(name);
+    getwatchListResponse()
+}
+
+
+function getwatchListResponse(response) {
+    console.log('getwatchListResponse ', response);
+    return response
 }
