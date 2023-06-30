@@ -26,14 +26,18 @@ class DeviceIdentifier {
 let deviceIdentifier = new DeviceIdentifier();
 
 let iosInterface = (window.webkit ? window.webkit.messageHandlers : {});
+let androidInterface = window["Android"]? window["Android"]: {};
 
 export function sendGetGroupsRequest() {
     console.log(deviceIdentifier.isIos)
-    //if(deviceIdentifier.isIos){
+    if(deviceIdentifier.isIos){
     console.log('entered')
     iosInterface.sendGetGroupsRequest && iosInterface.sendGetGroupsRequest.postMessage("trail");
     intializeGlobalVariable()
-    //}
+    }else if(deviceIdentifier.isAndroid){
+        console.log('entered android')
+        androidInterface.sendGetGroupsRequest && androidInterface.sendGetGroupsRequest.postMessage("trail");
+    }
 }
 
 export function intializeGlobalVariable() {
