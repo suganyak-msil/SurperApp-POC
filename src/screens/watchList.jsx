@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import { stockData, watchlistNames } from '../assets/stocksData'
 import AddImg from "../assets/images/add_w.png";
 import EditImg from "../assets/images/edit_w.png";
 import ManageImg from "../assets/images/manage_w.png";
 import MoreImg from "../assets/images/more.png";
 import { sendGetGroupsRequest, getWatchListData } from "../utils/device-interface";
+import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
 import WatchListReducer from '../reducers/watchListReducer';
 import { getsymbols, storewatchlist } from '../actions/watchlistAction';
@@ -12,6 +13,9 @@ import Searchbar from '../components/searchbar';
 console.log("watchlistNames", watchlistNames);
 
 export default function WatchList() {
+    const navigate = useNavigate()
+    const dispatch = useDispatch();
+
     const [stockList, setStockList] = useState(stockData)
     const [watchListNames, setWatchListNames] = useState([])
     const [msg, setMsg] = useState('');
@@ -21,7 +25,6 @@ export default function WatchList() {
     const [createWatchListOpen, setCreateWatchListOpen] = useState('modal fade')
     console.log('modalOpen', modalOpen);
 
-    const dispatch = useDispatch();
 
     const watchListGroup = useSelector(state => state.WatchListReducer);
     const watchListNamesGroup = watchListGroup.watchListSymbolsGroup
@@ -46,30 +49,30 @@ export default function WatchList() {
 
     useEffect(() => {
 
-        sendGetGroupsRequest()
-        let Grpresponse = window ?? window.getGroupsResponse();
-        console.log('response from device on load  ', Grpresponse);
-        let existingList = [...watchListNames];
+        // sendGetGroupsRequest()
+        // let Grpresponse = window ?? window.getGroupsResponse();
+        // console.log('response from device on load  ', Grpresponse);
+        // let existingList = [...watchListNames];
 
-        if (!Grpresponse) {
-            setMsg('Invalid Data ')
-            existingList[0] = {
-                name: 'Invalid Data',
-                id: '123',
-            }
-        }
-        else {
-            setMsg(Grpresponse)
-            let existingList = [...watchListNames];
-            existingList[0] = {
-                name: Grpresponse,
-                id: '123',
-            }
+        // if (!Grpresponse) {
+        //     setMsg('Invalid Data ')
+        //     existingList[0] = {
+        //         name: 'Invalid Data',
+        //         id: '123',
+        //     }
+        // }
+        // else {
+        //     setMsg(Grpresponse)
+        //     let existingList = [...watchListNames];
+        //     existingList[0] = {
+        //         name: Grpresponse,
+        //         id: '123',
+        //     }
 
-        }
-        console.log("existingList        ", existingList);
+        // }
+        // console.log("existingList        ", existingList);
 
-        setWatchListNames(existingList)
+        // setWatchListNames(existingList)
 
         // if (Grpresponse !== null && Grpresponse.data !== null) {
         //     dispatch(getsymbols(Grpresponse.data.watchlists))
@@ -104,13 +107,13 @@ export default function WatchList() {
         let req = {
             "wId": item.name
         }
-        // getWatchListData(req);
-        // let watchListRespone = window ?? window.getwatchListResponse();
-        // console.log("Respoinse from Device ", watchListRespone);
-        // if (watchListRespone !== null && watchListRespone.data !== null) {
-        //     dispatch(storewatchlist(watchListRespone.data.symbols));
+        getWatchListData(req);
+        let watchListRespone = window ?? window.getwatchListResponse();
+        console.log("Respoinse from Device ", watchListRespone);
+        if (watchListRespone !== null && watchListRespone.data !== null) {
+            dispatch(storewatchlist(watchListRespone.data.symbols));
 
-        // }
+        }
 
     }
     const handleOpenModal = () => {
@@ -186,15 +189,15 @@ export default function WatchList() {
                                         <img src={EditImg} />
 
                                     </div>
-                                    <div className='action_name'>
+                                    <div className='action_name' onClick={() => navigate('editwatchList')}>
                                         <p>Edit Current WatchList</p>
                                     </div>
                                 </div>
-                                <div className='list_item'>
+                                <div className='list_item' >
                                     <div className='w_icons'>
                                         <img src={ManageImg} />
                                     </div>
-                                    <div className='action_name'>
+                                    <div className='action_name' onClick={() => navigate('manage')}>
                                         <p>Manage WatchList</p>
                                     </div>
                                 </div>

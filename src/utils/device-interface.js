@@ -43,7 +43,9 @@ export function intializeGlobalVariable() {
             get: () => getGroupsResponse,
         },
         getwatchListresponse: {
-            get: () => getwatchListResponse,
+            get
+
+                : () => getwatchListResponse,
         }
     })
 }
