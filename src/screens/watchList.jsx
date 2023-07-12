@@ -1,36 +1,34 @@
 import React, { useEffect, useState } from 'react';
-import { stockData, watchlistNames } from '../assets/stocksData'
 import AddImg from "../assets/images/add_w.png";
 import EditImg from "../assets/images/edit_w.png";
 import ManageImg from "../assets/images/manage_w.png";
 import MoreImg from "../assets/images/more.png";
-import { sendGetGroupsRequest, getWatchListData } from "../utils/device-interface";
+import searchImg from "../assets/images/search.png";
+import { sendGetGroupsRequest, getWatchListSymbolData, getHeaderGroupsResponse, getwatchListSymbolsResponse } from "../utils/device-interface";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
 import WatchListReducer from '../reducers/watchListReducer';
-import { getsymbols, storewatchlist } from '../actions/watchlistAction';
+import { getsymbolslist, storewatchlistHeaders } from '../actions/watchlistAction';
 import Searchbar from '../components/searchbar';
-console.log("watchlistNames", watchlistNames);
 
 export default function WatchList() {
     const navigate = useNavigate()
     const dispatch = useDispatch();
 
-    const [stockList, setStockList] = useState(stockData)
-    const [watchListNames, setWatchListNames] = useState([])
+    const [stockList, setStockList] = useState([])
+    const [watchListNames, setWatchListNames] = useState([]);
+    console.log("watchListNames", watchListNames);
+    const [headerErr, setHeaderErr] = useState(false);
+    console.log("headerErr", headerErr);
+    const [stockDataErr, setStockDataErr] = useState(false)
     const [msg, setMsg] = useState('');
-    console.log('Message from api', msg);
     const [deviceType, setDeviceType] = useState("");
     const [modalOpen, setMOdalOpen] = useState('modal fade');
     const [createWatchListOpen, setCreateWatchListOpen] = useState('modal fade')
-    console.log('modalOpen', modalOpen);
 
 
     const watchListGroup = useSelector(state => state.WatchListReducer);
     const watchListNamesGroup = watchListGroup.watchListSymbolsGroup
-    console.log('watchListGroup  Reducer store',
-    );
-
 
     // device detect 
     useEffect(() => {
@@ -40,85 +38,87 @@ export default function WatchList() {
         ) {
             /iPad|iPhone|iPod/.test(navigator.userAgent) ?
                 setDeviceType("ios") : setDeviceType('Android')
-            setWatchListNames(watchlistNames);
+            // setWatchListNames(watchlistNames);
 
         } else {
             setDeviceType("Desktop");
         }
+        sendGetGroupsRequest();
     }, []);
 
     useEffect(() => {
-
-        // sendGetGroupsRequest()
-        // let Grpresponse = window ?? window.getGroupsResponse();
-        // console.log('response from device on load  ', Grpresponse);
-        // let existingList = [...watchListNames];
-
-        // if (!Grpresponse) {
-        //     setMsg('Invalid Data ')
-        //     existingList[0] = {
-        //         name: 'Invalid Data',
-        //         id: '123',
-        //     }
-        // }
-        // else {
-        //     setMsg(Grpresponse)
-        //     let existingList = [...watchListNames];
-        //     existingList[0] = {
-        //         name: Grpresponse,
-        //         id: '123',
-        //     }
-
-        // }
-        // console.log("existingList        ", existingList);
-
-        // setWatchListNames(existingList)
-
-        // if (Grpresponse !== null && Grpresponse.data !== null) {
-        //     dispatch(getsymbols(Grpresponse.data.watchlists))
-        //     let watchListNamesGroup = Grpresponse.data.watchlists;
-        //     let req = {
-        //         "wId": watchListNamesGroup[0].wName
-        //     }
-        //     // getWatchListData(req);
-        //     // let watchListRespone = window ?? window.getwatchListResponse();
-        //     // console.log("Respoinse from Device ", watchListRespone);
-        //     // if (watchListRespone !== null && watchListRespone.data !== null) {
-        //     //     dispatch(storewatchlist(watchListRespone));
-
-        //     // }
-        //     // else {
-        //     //     console.error('errror ', watchListRespone)
-        //     // }
-
-        // }
-        // else {
-        //     console.error('Invalid data ', Grpresponse)
-        // }
+        check();
     }, [])
+    async function check() {
+        // sendGetGroupsRequest();
+        if (!window.hasOwnProperty('getGroupsResponse')) {
+            Object.defineProperty(window, 'getGroupsResponse', {
+                value: (response) => {
+                    console.log("getGroupsResponse function called in web ",);
+                    let Grpresponse = JSON.parse(response)
+                    // return JSON.parse(response);
+                    if (Grpresponse && Grpresponse.status) {
+                        setWatchListNames(Grpresponse.data.watchlists);
+                        dispatch(storewatchlistHeaders(Grpresponse.data.watchlists))
+                        let headerArr = Grpresponse.data.watchlists;
+                        let req = JSON.stringify({
+                            "wId": headerArr[0].wId,
+                        })
+                        getWatchListSymbolData(req);
+                        setStockData()
+                    }
+                    else {
+                        setHeaderErr(true)
+                    }
+                },
+                writable: false,
+            });
+        }
+    }
 
 
 
+    const setStockData = () => {
+        console.log("inside stock Data func ");
+        if (!window.hasOwnProperty('getWatchListSymbolsResponse')) {
+            Object.defineProperty(window, 'getWatchListSymbolsResponse', {
+                value: (response) => {
+                    let symbolData = JSON.parse(response)
+                    console.log("getWatchListSymbolsResponse function called in web ", response);
+                    if (symbolData.status) {
+                        console.log("inside  symbolData true");
+                        let checkArr = symbolData.data.symbols;
+                        console.log("checkArr", checkArr, stockDataErr);
+                        setStockList(symbolData.data.symbols)
+                        dispatch(getsymbolslist(symbolData.data.symbols))
+                        setStockDataErr(false)
+                    } else {
+                        console.log("inside  symbolData false");
+                        setStockDataErr(true)
+                    }
+                },
+                writable: false,
+            });
+            console.log('')
 
-
+        }
+        else {
+            console.log(" else part of !window.hasOwnProperty('getWatchListSymbolsResponse')");
+        }
+    }
 
     const handleWatchListClick = (item) => {
         console.log("item", item);
-        let req = {
-            "wId": item.name
-        }
-        getWatchListData(req);
-        let watchListRespone = window ?? window.getwatchListResponse();
-        console.log("Respoinse from Device ", watchListRespone);
-        if (watchListRespone !== null && watchListRespone.data !== null) {
-            dispatch(storewatchlist(watchListRespone.data.symbols));
+        let req = JSON.stringify({
+            "wId": item,
+        })
+        getWatchListSymbolData(req);
+        setStockData()
 
-        }
 
     }
     const handleOpenModal = () => {
         setMOdalOpen('modal fade show')
-        console.log('handleClick open modal 11');
     }
     const handleCreateWatchList = () => {
         setMOdalOpen('modal fade ');
@@ -132,14 +132,29 @@ export default function WatchList() {
     const handlechange = () => {
 
     }
+    function handleNav() {
+        console.log("isnide habdleNav");
+        navigate('/search')
+
+    }
     return (
         <div>
-            <p className='watchList_Banner'>watchList Component</p>
-            <ul className='watclistNames_container'>
-                {watchlistNames && watchlistNames.length > 0 && watchlistNames.map((item) => {
-                    return <li onClick={() => handleWatchListClick(item)}>{item.name}</li>
-                })}
-            </ul>
+            <div className='watchlist_banner'>
+                <div className='right_header'>
+                    <p className='watchList_Banner'>watchList Component</p>
+
+                </div>
+                <div className='left_img' >
+                    <img src={searchImg} onClick={handleNav} />
+                </div>
+            </div>
+            {!headerErr ?
+                <ul className='watclistNames_container'>
+                    {watchListNames && watchListNames.length > 0 && watchListNames.map((item) => {
+                        return <li onClick={() => handleWatchListClick(item['wId'])}>{item['wName']} </li>
+                    })}
+
+                </ul> : <div className='header_err'>Invalid WatchList Header Data </div>}
             <div className='watchList_header'>
 
                 <Searchbar isSetting={false} placeholder=' stocks, future  & Options' handleSettings={handleOpenModal} isRoute={'search'} />
@@ -147,84 +162,88 @@ export default function WatchList() {
                     <img src={MoreImg} onClick={handleOpenModal} />
                 </div>
             </div>
-            <div className='watchListComponent'>
-                {stockList.map((item) => {
-                    return <div className='watchlist-item'>
-                        <div className='watchlist-row'>
-                            <div className='watchlist_data_left' >
+            {!stockDataErr ?
+                <div className='watchListComponent'>
+                    {stockList.map((item) => {
+                        return <div className='watchlist-item'>
+                            <div className='watchlist-row'>
+                                <div className='watchlist_data_left' >
 
-                                <p style={{ fontWeight: 'bold' }}>{item.companyName}</p>
+                                    <p style={{ fontWeight: 'bold', color: 'blue' }}>{item.symbol}</p>
+                                </div>
+                                <div className='watchlist_data_right'>
+                                    <p >--</p>
+                                </div>
                             </div>
-                            <div className='watchlist_data_right'>
-                                <p >{item.sym.excToken}</p>
+                            <div className='watchlist-row'>
+                                <div className='watchlist_data_left'>
+                                    <p style={{ fontWeight: 'bold', color: 'green' }}>{item.companyName}</p>
+                                </div>
+                                <div className='watchlist_data_right'>
+                                    <p>-</p>
+                                </div>
                             </div>
                         </div>
-                        <div className='watchlist-row'>
-                            <div className='watchlist_data_left'>
-                                <p>{item.sym.exc}</p>
-                            </div>
-                            <div className='watchlist_data_right'>
-                                <p>{item.sym.tickSize}</p>
+                    })}
+                    {/* modal popup */}
+
+                    {/* open on click more icon  */}
+                    <div class={modalOpen} id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ display: modalOpen === 'modal fade show' ? 'block' : '' }}>
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <div className='list_item'>
+                                        <div className='w_icons'>
+                                            <img src={AddImg} />
+                                        </div>
+                                        <div className='action_name' onClick={handleCreateWatchList}>
+                                            <p>Create New WatchList</p>
+                                        </div>
+                                    </div>
+                                    <div className='list_item'>
+                                        <div className='w_icons'>
+                                            <img src={EditImg} />
+
+                                        </div>
+                                        {/* onClick={() => navigate('editwatchList')} */}
+                                        <div className='action_name' onClick={() => navigate('editwatchList')} >
+                                            <p>Edit Current WatchList</p>
+                                        </div>
+                                    </div>
+                                    <div className='list_item' >
+                                        <div className='w_icons'>
+                                            <img src={ManageImg} />
+                                        </div>
+                                        {/* onClick={() => navigate('manage')} */}
+                                        <div className='action_name' onClick={() => navigate('manage')} >
+                                            <p>Manage WatchList</p>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </div>
-                })}
-                {/* modal popup */}
 
-                {/* open on click more icon  */}
-                <div class={modalOpen} id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ display: modalOpen === 'modal fade show' ? 'block' : '' }}>
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-body">
-                                <div className='list_item'>
-                                    <div className='w_icons'>
-                                        <img src={AddImg} />
-                                    </div>
-                                    <div className='action_name' onClick={handleCreateWatchList}>
-                                        <p>Create New WatchList</p>
-                                    </div>
+                    {/* create watchlist */}
+                    <div class={createWatchListOpen} id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ display: createWatchListOpen === 'modal fade show' ? 'block' : '' }}>
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <p>Create WatchList</p>
                                 </div>
-                                <div className='list_item'>
-                                    <div className='w_icons'>
-                                        <img src={EditImg} />
-
-                                    </div>
-                                    <div className='action_name' onClick={() => navigate('editwatchList')}>
-                                        <p>Edit Current WatchList</p>
-                                    </div>
+                                <div class="modal-body">
+                                    <p>List Name </p>
+                                    <input type='text' className='create_watchList' name='watchListName' onChange={handlechange} />
                                 </div>
-                                <div className='list_item' >
-                                    <div className='w_icons'>
-                                        <img src={ManageImg} />
-                                    </div>
-                                    <div className='action_name' onClick={() => navigate('manage')}>
-                                        <p>Manage WatchList</p>
-                                    </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary btn-lg btn-block" onClick={addNewWatchList}>Create</button>
                                 </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-
-                {/* create watchlist */}
-                <div class={createWatchListOpen} id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ display: createWatchListOpen === 'modal fade show' ? 'block' : '' }}>
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <p>Create WatchList</p>
-                            </div>
-                            <div class="modal-body">
-                                <p>List Name </p>
-                                <input type='text' className='create_watchList' name='watchListName' onChange={handlechange} />
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-primary btn-lg btn-block" onClick={addNewWatchList}>Create</button>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </div> : <div className='stock_err'>No stock Data </div>}
+
         </div>
     )
 }

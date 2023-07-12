@@ -231,6 +231,30 @@
   font-size: 20px;
 }
 
+.header_err {
+  text-align: center;
+  font-weight: 500;
+}
+
+.stock_err {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+}
+
+.watchlist_banner {
+  margin-top: 3%;
+  display: flex;
+  justify-content: space-around;
+}
+
+.right_header {}
+
+.left_img img {
+  width: 50%;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;

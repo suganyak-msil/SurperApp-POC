@@ -26,45 +26,68 @@ class DeviceIdentifier {
 let deviceIdentifier = new DeviceIdentifier();
 
 let iosInterface = (window.webkit ? window.webkit.messageHandlers : {});
-let androidInterface = window["Android"]? window["Android"]: {};
+const __internalWindow = window;
+var AndroidInterface = __internalWindow['Android'] ? __internalWindow['Android'] : {};
 
 export function sendGetGroupsRequest() {
     console.log(deviceIdentifier.isIos)
-    if(deviceIdentifier.isIos){
-    console.log('entered')
-    iosInterface.sendGetGroupsRequest && iosInterface.sendGetGroupsRequest.postMessage("trail");
-    intializeGlobalVariable()
-    }else if(deviceIdentifier.isAndroid){
+    if (deviceIdentifier.isIos) {
+        console.log('entered')
+        iosInterface.sendGetGroupsRequest && iosInterface.sendGetGroupsRequest.postMessage("");
+        // intializeGlobalVariable()
+    } else if (deviceIdentifier.isAndroid) {
         console.log('entered android')
-        androidInterface.sendGetGroupsRequest && androidInterface.sendGetGroupsRequest.postMessage("trail");
+        AndroidInterface.sendGetGroupsRequest && AndroidInterface.sendGetGroupsRequest("");
     }
-}
-
-export function intializeGlobalVariable() {
-    console.log(window)
-    window ?? Object.defineProperties(window, {
-        getGroupsResponse: {
-            get: () => getGroupsResponse,
-        },
-        getwatchListresponse: {
-            get
-
-                : () => getwatchListResponse,
-        }
-    })
-}
-
-function getGroupsResponse(response) {
-    console.log('getGroupsResponse ', response);
-    return response;
-}
-export function getWatchListData(name) {
-    iosInterface.sendGetSymbolsRequest && iosInterface.sendGetSymbolsRequest.postMessage(name);
-    getwatchListResponse()
+    return true;
 }
 
 
-function getwatchListResponse(response) {
-    console.log('getwatchListResponse ', response);
-    return response
+// export function getHeaderGroupsResponse(response) {
+//     if (!window.hasOwnProperty('getGroupsResponse')) {
+//         Object.defineProperty(window, 'getGroupsResponse', {
+//             value: (response) => {
+//                 console.log("getGroupsResponse function called in web ", response);
+//                 return JSON.parse(response);
+//             },
+//             writable: false,
+//         });
+//     }
+
+// }
+export function getWatchListSymbolData(req) {
+    if (deviceIdentifier.isIos) {
+        console.log('entered')
+        iosInterface.sendGetSymbolsRequest && iosInterface.sendGetSymbolsRequest.postMessage(req);
+
+        // intializeGlobalVariable()
+    } else if (deviceIdentifier.isAndroid) {
+        console.log('entered android')
+        AndroidInterface.sendGetSymbolsRequest && AndroidInterface.sendGetSymbolsRequest(req);
+    }
+    // getwatchListResponse()
+}
+
+export function getwatchListSymbolsResponse(response) {
+    if (!window.hasOwnProperty('getWatchListSymbolsResponse')) {
+        Object.defineProperty(window, 'getWatchListSymbolsResponse', {
+            value: (response) => {
+                console.log("getGroupsResponse function called in web ", response);
+                return JSON.parse(response);
+            },
+            writable: false,
+        });
+    }
+    // console.log('getwatchListResponse ', response);
+    // return response
+}
+
+export function searchwatchListSymbolsRequest(req) {
+    if (deviceIdentifier.isIos) {
+        console.log('entered')
+        iosInterface.sendSearchSymbolsRequest && iosInterface.sendSearchSymbolsRequest.postMessage(req);
+    } else if (deviceIdentifier.isAndroid) {
+        console.log('entered android')
+        AndroidInterface.sendSearchSymbolsRequest && AndroidInterface.sendSearchSymbolsRequest(req);
+    }
 }
