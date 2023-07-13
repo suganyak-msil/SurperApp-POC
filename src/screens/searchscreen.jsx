@@ -9,7 +9,8 @@ import "../assets/css/searchScreen.css";
 
 export default function Searchscreen() {
     const navigate = useNavigate();
-    const [symbolData, setSymbolData] = useState([]);
+    const [symbolData, setSymbolData] = useState([]
+    );
     const [seatrchName, setSearchName] = useState([])
     const handleSearch = (data) => {
         console.log("handle search", data.target.value,);
@@ -57,17 +58,16 @@ export default function Searchscreen() {
                         {symbolData.map((item) => {
                             return <div className='sym_data'>
                                 <div className='symbol_name'>
-                                    <p>{item.symbol}</p>
+                                    <p>{item.Symbol}</p>
                                     <br />
-                                    <p>{item.companyName}</p>
+                                    <p>{item['Company Name']}</p>
                                 </div>
                                 <div className="favorite_img_right">
-                                    <img src={starImg} style={{ width: "10%" }} />
+                                    <img src={starImg} />
                                 </div>
                             </div>
                         })}
                     </div>}
-                <img src={starImg} style={{ width: "50%" }} />
 
             </div>
 

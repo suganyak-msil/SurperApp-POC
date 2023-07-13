@@ -48,16 +48,18 @@ export default function WatchList() {
 
     useEffect(() => {
         check();
+        console.log("console in useEffect ");
     }, [])
     async function check() {
         // sendGetGroupsRequest();
         if (!window.hasOwnProperty('getGroupsResponse')) {
+            console.log("!window.hasOwnProperty('getGroupsResponse')");
             Object.defineProperty(window, 'getGroupsResponse', {
                 value: (response) => {
                     console.log("getGroupsResponse function called in web ",);
                     let Grpresponse = JSON.parse(response)
-                    // return JSON.parse(response);
                     if (Grpresponse && Grpresponse.status) {
+                        console.log("inside success  Grpresponse.status");
                         setWatchListNames(Grpresponse.data.watchlists);
                         dispatch(storewatchlistHeaders(Grpresponse.data.watchlists))
                         let headerArr = Grpresponse.data.watchlists;
@@ -68,11 +70,27 @@ export default function WatchList() {
                         setStockData()
                     }
                     else {
+                        console.log("inside failure  Grpresponse.status");
+
                         setHeaderErr(true)
                     }
                 },
                 writable: false,
             });
+        }
+        else {
+            let checkResponse = window.getGroupsResponse();
+            checkResponse = JSON.parse(checkResponse)
+            if (checkResponse.status) {
+                setWatchListNames(checkResponse.data.watchlists);
+
+            }
+            else {
+                console.error("invalid  data call ")
+            }
+
+            console.log("window.hasOwnProperty('getGroupsResponse'");
+
         }
     }
 
